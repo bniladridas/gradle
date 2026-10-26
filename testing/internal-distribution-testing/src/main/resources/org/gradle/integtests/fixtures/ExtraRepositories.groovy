@@ -8,12 +8,11 @@ import org.gradle.api.initialization.Settings
 import org.gradle.api.invocation.Gradle
 import org.gradle.util.GradleVersion
 
-// This file is a resource, not compiled code, so nothing refers to the class.
-// RepoScriptBlockUtil.extraRepositoriesInitScript reads it as text and adds a call to declareIn with the extra repositories.
-// The result is the init script that declares the extra repositories in test builds.
+// The build only copies this file.
+// RepoScriptBlockUtil.extraRepositoriesInitScript reads the file as text and adds a call to declareIn with the extra repositories.
 // Each repository is a map with the keys 'name', 'url' and 'groupRegexes'.
 // All methods are static and get the repositories as an argument: Gradle isolates the actions for projects, so they must not capture an object.
-@SuppressWarnings("unused")
+@SuppressWarnings("unused") // Only the generated init script calls this class.
 class ExtraRepositories {
 
     static final boolean SUPPORTS_CONTENT_FILTERING = GradleVersion.current() >= GradleVersion.version("5.1")

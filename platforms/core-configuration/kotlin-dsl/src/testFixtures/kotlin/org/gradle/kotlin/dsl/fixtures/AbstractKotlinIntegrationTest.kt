@@ -226,6 +226,8 @@ abstract class AbstractKotlinIntegrationTest : AbstractIntegrationTest() {
 
     protected
     fun withKotlinBuildSrc() {
+        // The plugin repositories also serve the dependencies of the kotlin-dsl plugin, for example the
+        // Kotlin Gradle plugin at the embedded Kotlin version, which can be in an extra repository only.
         withSettingsIn(
             "buildSrc",
             """

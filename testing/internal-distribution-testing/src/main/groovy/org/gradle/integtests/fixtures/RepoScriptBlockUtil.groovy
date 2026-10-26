@@ -125,8 +125,9 @@ class RepoScriptBlockUtil {
 
     /**
      * Repositories for dependency versions not in the public repositories. Register an extra repository here,
-     * not in the tests. See contributing/Testing.md. Keep a repository in the list only while tests need it.
-     * The list drops {@code null} entries.
+     * not in the tests. See contributing/Testing.md.
+     * Each entry has a condition, which the tests check when they start. A false condition gives {@code null}, and the list drops it.
+     * Thus, builds get a repository only while a version under test needs it.
      *
      * The repositories blocks of this class declare these repositories (see {@link #extraRepositoriesDefinition}).
      * An init script declares them in every executer build, smoke test build and performance test build (see {@link #extraRepositoriesInitScript}).
@@ -163,6 +164,7 @@ class RepoScriptBlockUtil {
         repositoriesBlock(dsl, gradlePluginRepositoryDefinition(dsl), mavenCentralRepositoryDefinition(dsl))
     }
 
+    // Tooling API builds get no init script, so every repositories block of this class also declares the extra repositories.
     private static String repositoriesBlock(GradleDsl dsl, String... definitions) {
         return """
             repositories {
@@ -172,6 +174,14 @@ class RepoScriptBlockUtil {
         """
     }
 
+    /**
+     * Declarations of the extra repositories, see {@link #EXTRA_REPOSITORIES}.
+     * The repositories blocks of this class, for example {@link #mavenCentralRepository}, include them.
+     * The {@code ...RepositoryDefinition()} methods declare one repository without them.
+     *
+     * <p>{@code GradleExecuter} builds get the extra repositories from an init script anyway. Tooling API builds get no init script:
+     * in them, declare the repositories with a repositories block of this class, or add these declarations.</p>
+     */
     static String extraRepositoriesDefinition(GradleDsl dsl = GROOVY) {
         EXTRA_REPOSITORIES.collect { extraRepositoryDefinition(dsl, it) }.join("")
     }
@@ -209,14 +219,17 @@ class RepoScriptBlockUtil {
         regex.replace('\\', '\\\\')
     }
 
+    /** One repository declaration, without the extra repositories (see {@link #extraRepositoriesDefinition}). */
     static String mavenCentralRepositoryDefinition(GradleDsl dsl = GROOVY) {
         MirroredRepository.MAVEN_CENTRAL.getRepositoryDefinition(dsl)
     }
 
+    /** One repository declaration, without the extra repositories (see {@link #extraRepositoriesDefinition}). */
     static String lightbendMavenRepositoryDefinition(GradleDsl dsl = GROOVY) {
         MirroredRepository.LIGHTBEND_MAVEN.getRepositoryDefinition(dsl)
     }
 
+    /** One repository declaration, without the extra repositories (see {@link #extraRepositoriesDefinition}). */
     static String lightbendIvyRepositoryDefinition(GradleDsl dsl = GROOVY) {
         MirroredRepository.LIGHTBEND_IVY.getRepositoryDefinition(dsl)
     }
@@ -225,6 +238,7 @@ class RepoScriptBlockUtil {
         MirroredRepository.GOOGLE.mirrorUrl
     }
 
+    /** One repository declaration, without the extra repositories (see {@link #extraRepositoriesDefinition}). */
     static String googleRepositoryDefinition(GradleDsl dsl = GROOVY) {
         MirroredRepository.GOOGLE.getRepositoryDefinition(dsl)
     }
@@ -233,6 +247,7 @@ class RepoScriptBlockUtil {
         MirroredRepository.GRADLE.mirrorUrl
     }
 
+    /** One repository declaration, without the extra repositories (see {@link #extraRepositoriesDefinition}). */
     static String gradleRepositoryDefinition(GradleDsl dsl = GROOVY) {
         MirroredRepository.GRADLE.getRepositoryDefinition(dsl)
     }
@@ -241,6 +256,7 @@ class RepoScriptBlockUtil {
         MirroredRepository.GRADLE_PLUGIN.mirrorUrl
     }
 
+    /** One repository declaration, without the extra repositories (see {@link #extraRepositoriesDefinition}). */
     static String gradlePluginRepositoryDefinition(GradleDsl dsl = GROOVY) {
         MirroredRepository.GRADLE_PLUGIN.getRepositoryDefinition(dsl)
     }
