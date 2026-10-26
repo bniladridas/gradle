@@ -57,4 +57,14 @@ repositories {
             excludeModule("gradle", "gradle")
         }
     }
+    if (versionCatalogs.find("libs").flatMap { it.findVersion("kotlin") }.map { it.requiredVersion.matches(Regex(".+-\\d+")) }.orElse(false)) {
+        maven {
+            // Declared after Maven Central. Thus only the Kotlin that Maven Central does not have comes from this repository.
+            name = "Kotlin dev repository"
+            url = uri("https://packages.jetbrains.team/maven/p/kt/dev")
+            content {
+                includeGroupByRegex("org\\.jetbrains\\.kotlin(\\..+)?")
+            }
+        }
+    }
 }
